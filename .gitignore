@@ -1,0 +1,19 @@
+.env
+.idea/
+.vscode/
+*.log
+
+# App
+app/vendor/
+app/var/
+app/.composer/
+app/.phpunit.result.cache
+app/.php-cs-fixer.cache
+
+# Dumps
+dump.sql
+*.sql.gz
+
+# TLS-сертификаты для localhost (генерируются скриптом)
+docker/nginx/certs/*
+!docker/nginx/certs/.gitkeep

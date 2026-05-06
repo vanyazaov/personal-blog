@@ -1,0 +1,71 @@
+{
+    "name": "abelohost/test-task",
+    "description": "Test task application — PHP 8.3 + Smarty 5",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": "^8.3",
+        "ext-pdo": "*",
+        "ext-mysqli": "*",
+        "ext-mbstring": "*",
+        "ext-intl": "*",
+        "smarty/smarty": "^5.4"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.5",
+        "pestphp/pest-plugin-type-coverage": "^3.2",
+        "phpstan/phpstan": "^1.12",
+        "phpstan/phpstan-strict-rules": "^1.6",
+        "phpstan/phpstan-deprecation-rules": "^1.2",
+        "friendsofphp/php-cs-fixer": "^3.64",
+        "rector/rector": "^1.2",
+        "phpmd/phpmd": "^2.15",
+        "squizlabs/php_codesniffer": "^3.10"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        },
+        "sort-packages": true,
+        "optimize-autoloader": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "scripts": {
+        "test": "pest",
+        "test:coverage": "pest --coverage --min=80",
+        "test:type-coverage": "pest --type-coverage --min=100",
+        "stan": "phpstan analyse --memory-limit=1G",
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix",
+        "rector": "rector process --dry-run",
+        "rector:fix": "rector process",
+        "phpcs": "phpcs",
+        "phpmd": "phpmd src text phpmd.xml",
+        "lint": [
+            "@cs:check",
+            "@stan",
+            "@rector",
+            "@phpcs",
+            "@phpmd"
+        ],
+        "fix": [
+            "@cs:fix",
+            "@rector:fix"
+        ],
+        "ci": [
+            "@lint",
+            "@test"
+        ]
+    }
+}
