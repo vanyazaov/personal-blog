@@ -145,6 +145,9 @@ rector-fix: ## Rector (применить рефакторинги)
 phpcs: ## PHP_CodeSniffer (PSR-12 + strict)
 	$(EXEC) ./vendor/bin/phpcs
 
+phpcs-fix: ## PHP_CodeSniffer (PSR-12 + strict)
+	$(EXEC) ./vendor/bin/phpcbf
+
 phpmd: ## PHPMD
 	$(EXEC) ./vendor/bin/phpmd src text phpmd.xml
 

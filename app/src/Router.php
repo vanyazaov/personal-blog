@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace App;
+
 use RuntimeException;
 
 /**
@@ -14,8 +16,8 @@ use RuntimeException;
 function dispatch(array $routes, string $method, string $path): void
 {
     foreach ($routes as [$routeMethod, $routePath, $routeAction]) {
-        $routePath = is_string($routePath ?? null) ? $routePath : '';
-        $nameRouteAction = is_string($routeAction ?? null) ? $routeAction : '';
+        $routePath = \is_string($routePath ?? null) ? $routePath : '';
+        $nameRouteAction = \is_string($routeAction ?? null) ? $routeAction : '';
         if ($routeMethod !== $method) {
             continue;
         }
@@ -23,9 +25,9 @@ function dispatch(array $routes, string $method, string $path): void
         // из $routePath делаем выражение для regex с именованной группой
         $replaced = preg_replace('#\{(\w+)\}#', '(?P<$1>[^/]+)', $routePath);
 
-        if (!is_string($replaced)) {
+        if (!\is_string($replaced)) {
             throw new RuntimeException(
-                sprintf('Функция preg_replace вернула не текстовое значение: %s', $routePath)
+                \sprintf('Функция preg_replace вернула не текстовое значение: %s', $routePath)
             );
         }
 
@@ -33,26 +35,24 @@ function dispatch(array $routes, string $method, string $path): void
 
         // Ищем совпадения по созданному паттерну
         if ((bool) preg_match($pattern, $path, $matches)) {
-            if (!is_callable($routeAction)) {
+            // Оставим только именнованные параметры
+            $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+
+            // Распарсим строку в массив по @
+            [$controllerName, $controllerAction] = explode('@', $nameRouteAction);
+
+            $controller = new $controllerName();
+            $callable = [$controller, $controllerAction];
+            if (!\is_callable($callable)) {
                 continue;
             }
 
-            // Передаем параметры в функцию
-            $result = count($matches) >= 3 ? call_user_func($routeAction, $matches[1]) : call_user_func($routeAction);
-
-            if (!is_string($result)) {
-                throw new RuntimeException(
-                    sprintf('Функция вернула не текстовое значение: %s', $nameRouteAction)
-                );
-            }
-
-            echo $result;
-
-            exit();
+            \call_user_func_array($callable, array_values($params));
+            return;
         }
     }
 
     // Ничего не нашлось
     http_response_code(404);
-    echo notFound();
+    echo 'Ничего не найдено';
 }
