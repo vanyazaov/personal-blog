@@ -6,6 +6,7 @@ namespace App;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 require __DIR__ . '/../src/Router.php';
+require __DIR__ . '/../src/helper.php';
 
 header('Content-Type: text/html; charset=utf-8');
 

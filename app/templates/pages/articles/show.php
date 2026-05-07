@@ -1,0 +1,1 @@
+<h4>Article <?= $data['articleId'] ?> from category <?= $data['categoryId'] ?></h4>

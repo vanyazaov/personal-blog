@@ -9,6 +9,6 @@ class HomeController
     public function index(): void
     {
 
-        echo "<h1>Рад вас видеть на моём блоге!</h1>";
+        render('home');
     }
 }

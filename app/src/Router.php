@@ -54,5 +54,5 @@ function dispatch(array $routes, string $method, string $path): void
 
     // Ничего не нашлось
     http_response_code(404);
-    echo 'Ничего не найдено';
+    render('errors/404');
 }
