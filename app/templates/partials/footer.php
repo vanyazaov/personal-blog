@@ -1,1 +1,5 @@
-<h2>Footer</h2>
+    <footer class="site-footer">
+        <div class="container">
+            Copyright © <?= date('Y') ?>. All Rights Reserved.
+        </div>
+    </footer>

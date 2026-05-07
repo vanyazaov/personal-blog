@@ -1,1 +1,5 @@
-<h2>Header</h2>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="/" class="logo">Blogy.</a>
+        </div>
+    </header>
