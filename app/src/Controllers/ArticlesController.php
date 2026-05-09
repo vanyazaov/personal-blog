@@ -8,7 +8,6 @@ class ArticlesController
 {
     public function index(string $id): void
     {
-
         $categoryId = (int) $id;
         render('articles/list', ['categoryId' => $categoryId]);
     }
