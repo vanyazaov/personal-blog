@@ -14,7 +14,7 @@ $routes = require __DIR__ . '/../src/routes.php';
 try {
     $method = $_SERVER['REQUEST_METHOD'];
     $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    dispatch($routes, $method, $path);
+    dispatch($routes, $method, $path, $pdo);
 } catch (\Throwable $e) {
     error_log($e->getMessage() . "\n" . $e->getTraceAsString());
     http_response_code(500);

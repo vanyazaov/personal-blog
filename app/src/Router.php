@@ -13,7 +13,7 @@ use RuntimeException;
  *
  * @param array<string, mixed> $routes
  */
-function dispatch(array $routes, string $method, string $path): void
+function dispatch(array $routes, string $method, string $path, \PDO $pdo): void
 {
     foreach ($routes as [$routeMethod, $routePath, $routeAction]) {
         $routePath = \is_string($routePath ?? null) ? $routePath : '';
@@ -41,7 +41,17 @@ function dispatch(array $routes, string $method, string $path): void
             // Распарсим строку в массив по @
             [$controllerName, $controllerAction] = explode('@', $nameRouteAction);
 
-            $controller = new $controllerName();
+            
+            // временное решение
+            $repositories = [
+                'App\Controllers\PostsController' => 'App\Repositories\PostsRepository'
+            ];
+            $repo = null;
+            if (isset($repositories[$controllerName])) {
+               $repo = new $repositories[$controllerName]($pdo);
+            }
+
+            $controller = new $controllerName($repo);
             $callable = [$controller, $controllerAction];
             if (!\is_callable($callable)) {
                 continue;

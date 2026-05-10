@@ -4,19 +4,24 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-class ArticlesController
+use App\Repositories\PostsRepository;
+
+class PostsController
 {
+    public function __construct(private PostsRepository $repo) {}
+
     public function index(string $id): void
     {
         $categoryId = (int) $id;
-        render('articles/list', ['categoryId' => $categoryId]);
+        $posts = $this->repo->findByCategory($categoryId, 10);
+        render('posts/list', ['categoryId' => $categoryId, 'posts' => $posts]);
     }
 
     public function show(string $categoryId, string $id): void
     {
         $categoryId = (int) $categoryId;
         $articleId = (int) $id;
-        render('articles/show', [
+        render('posts/show', [
             'categoryId' => $categoryId,
             'articleId' => $articleId,
         ]);
