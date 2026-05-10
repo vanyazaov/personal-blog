@@ -26,6 +26,7 @@ const SQL_CREATE_TABLES = [
     FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
     )"
 ];
+const DROP_TABLES = ['post_categories', 'categories', 'posts'];
 
 function showHelp(): void {
     echo <<<HELP
@@ -62,6 +63,12 @@ function isEmptyDB(\PDO $pdo): bool {
 function createTables(\PDO $pdo): void {
     foreach (SQL_CREATE_TABLES as $table) {
         $pdo->exec($table);
+    }
+}
+
+function dropTables(\PDO $pdo): void {
+    foreach (DROP_TABLES as $table) {
+        $pdo->exec("DROP TABLE IF EXISTS $table");
     }
 }
 
@@ -170,9 +177,44 @@ function generatePosts(\PDO $pdo, int $postsCount): void {
     }
 }
 
+function assignRandomPostToRandomCategories(\PDO $pdo): void {
+    $postsStmt = $pdo->query("SELECT id FROM posts");
+    $posts = $postsStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $categoriesStmt = $pdo->query("SELECT id FROM categories");
+    $categories = $categoriesStmt->fetchAll(PDO::FETCH_COLUMN);
+
+    if (empty($posts) || empty($categories)) {
+        throw new RuntimeException("There are no posts or categories to create links to.");
+    }
+
+    // Подготавливаем запрос для вставки
+    $insertStmt = $pdo->prepare(
+        "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
+    );    
+
+    foreach ($posts as $postId) {
+        // Определяем случайное количество категорий (от 1 до 4)
+        $categoriesCount = min(
+            random_int(1, 4),
+            count($categories)
+        );
+
+        // Перемешиваем категории и берем нужное количество
+        $shuffledCategories = $categories;
+        shuffle($shuffledCategories);
+        $selectedCategories = array_slice($shuffledCategories, 0, $categoriesCount); 
+        
+        // Создаем связи
+        foreach ($selectedCategories as $categoryId) {
+            $insertStmt->execute([$postId, $categoryId]);
+        }        
+    }
+}
+
 function main(array $argv): int {
     $rest = 0;
-    $opts = getopt('h', ['help', 'version'], $rest);
+    $opts = getopt('h', ['help', 'version', 'fresh'], $rest);
     $positional = array_slice($argv, $rest);
 
     if (isset($opts['h']) || isset($opts['help'])) {
@@ -191,6 +233,20 @@ function main(array $argv): int {
         $env = parse_ini_file(CONFIG_INI_FILE);
 
         $pdo = connectDB($env);
+        if (isset($opts['fresh'])) {
+            fwrite(STDOUT, "⚠️  WARNING: This action will delete all tables in the database!\n");
+            fwrite(STDOUT, "База данных: " . $env['DB_NAME'] . "\n\n");
+            fwrite(STDOUT, "Вы уверены? (yes/no): ");
+
+            $handle = fopen("php://stdin", "r");
+            $confirmation = trim(fgets($handle));
+            fclose($handle);
+
+            if (strtolower($confirmation) === 'yes' || strtolower($confirmation) === 'y') {
+                dropTables($pdo);
+                fwrite(STDOUT, "✅ Tables have been deleted successfully.\n");
+            }
+        }
         if (!isEmptyDB($pdo)) {
             fwrite(STDERR, "Error: DB is not empty.\n");
             return EXIT_ERROR;
@@ -200,17 +256,18 @@ function main(array $argv): int {
         $pdo->beginTransaction();
         createCategories($pdo);
         generatePosts($pdo, 100);
+        assignRandomPostToRandomCategories($pdo);
         $pdo->commit();
-        var_dump($pdo);
+        fwrite(STDOUT, "✅ The tables have been successfully created and populated with data.\n");
         
-    } catch (\InvalidArgumentException $e) {
-        fwrite(STDERR, "Error: " . $e->getMessage() . "\n");
-        return EXIT_ERROR;
-    } catch (\PDOException $e) {
+    }  catch (\PDOException $e) {
         if ($pdo->inTransaction()) {
             $pdo->rollBack();
         }
-        fwrite(STDERR, "Error connect DB: " . $e->getMessage() . "\n");
+        fwrite(STDERR, "❌ Error connect DB: " . $e->getMessage() . "\n");
+        return EXIT_ERROR;
+    } catch (\Exception $e) {
+        fwrite(STDERR, "❌ Error: " . $e->getMessage() . "\n");
         return EXIT_ERROR;
     }
 
