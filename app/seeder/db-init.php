@@ -65,6 +65,111 @@ function createTables(\PDO $pdo): void {
     }
 }
 
+function createCategories(\PDO $pdo): void {
+    $stmt = $pdo->prepare('
+        INSERT INTO categories (name) VALUES (?)
+    ');       
+    for ($i = 1; $i < 11; $i++) {
+        $stmt->execute(["Category #$i"]);
+    }
+}
+
+function generatePosts(\PDO $pdo, int $postsCount): void {
+    $titles = [
+        'Новости', 'Обновление', 'Важное объявление', 'Полезный совет', 
+        'Как начать', 'Лучшие практики', 'Руководство', 'Туториал',
+        'Идеи для развития', 'Анализ рынка', 'Сравнение подходов',
+        'Кейс: успешная реализация', 'Ошибки новичков', 'Секреты мастерства',
+        'Тренды года', 'Инструменты профессионала', 'Будущее технологии'
+    ];
+
+    $adjectives = [
+        'быстрый', 'удобный', 'мощный', 'простой', 'эффективный',
+        'инновационный', 'надёжный', 'гибкий', 'безопасный', 'масштабируемый'
+    ];
+
+    $nouns = [
+        'подход', 'метод', 'инструмент', 'решение', 'способ',
+        'алгоритм', 'паттерн', 'фреймворк', 'библиотека', 'продукт'
+    ];
+
+    $paragraphs = [
+        'В этой статье мы рассмотрим ключевые аспекты данной темы.',
+        'На основе многолетнего опыта мы подготовили практические рекомендации.',
+        'Этот подход уже используют ведущие компании в своей работе.',
+        'Не забывайте учитывать контекст и специфику вашего проекта.',
+        'Результаты нашего исследования подтверждают эффективность метода.',
+        'Важно понимать, что каждая ситуация требует индивидуального решения.',
+        'Мы рекомендуем начать с малого и постепенно масштабировать успех.',
+        'Ошибки на начальном этапе неизбежны - главное делать выводы.',
+        'Инвестиции в качество всегда окупаются в долгосрочной перспективе.',
+        'Команда профессионалов поможет избежать типичных проблем.'
+    ];
+    // Функция генерации случайной даты (от текущей до 100 дней назад)
+    function randomDate(int $daysBack = 100): string {
+        $timestamp = time() - mt_rand(0, $daysBack * 86400);
+        return date('Y-m-d H:i:s', $timestamp);
+    }
+
+    // Функция генерации заголовка
+    function generateTitle(array $titles, array $adjectives, array $nouns): string {
+        // 70% - готовые заголовки, 30% - комбинированные
+        if (mt_rand(1, 100) <= 70) {
+            return $titles[array_rand($titles)];
+        } else {
+            $adj = $adjectives[array_rand($adjectives)];
+            $noun = $nouns[array_rand($nouns)];
+            return ucfirst($adj) . ' ' . ucfirst($noun);
+        }
+    }
+    // Функция генерации тела поста
+    function generateBody(array $paragraphs): string {
+        $numParagraphs = mt_rand(2, 6);
+        $body = '';
+        $usedParagraphs = [];
+        
+        for ($i = 0; $i < $numParagraphs; $i++) {
+            // Выбираем случайный параграф, избегая дубликатов подряд
+            do {
+                $paragraph = $paragraphs[array_rand($paragraphs)];
+            } while ($paragraph === end($usedParagraphs) && count($usedParagraphs) > 0);
+            
+            $usedParagraphs[] = $paragraph;
+            $body .= $paragraph . ' ';
+            
+            // Иногда добавляем пояснения или примеры
+            if (mt_rand(1, 100) <= 30) {
+                $body .= 'Например, многие пользователи отмечают улучшение результатов на 30-50%. ';
+            }
+        }
+        
+        // Иногда добавляем заключение
+        if (mt_rand(1, 100) <= 40) {
+            $conclusions = [
+                'В заключение стоит отметить, что последовательность действий критически важна.',
+                'Попробуйте применить эти знания на практике уже сегодня.',
+                'Делитесь своим опытом в комментариях - это поможет другим.',
+                'Следите за обновлениями, мы готовим новые материалы.'
+            ];
+            $body .= $conclusions[array_rand($conclusions)];
+        }
+        
+        return trim($body);
+    }  
+    
+    // Генерация массива постов
+    $stmt = $pdo->prepare('
+        INSERT INTO posts (title, body, created_at) VALUES (?, ?, ?)
+    ');
+    for ($i = 1; $i <= $postsCount; $i++) {
+        $stmt->execute([
+            generateTitle($titles, $adjectives, $nouns),
+            generateBody($paragraphs),
+            randomDate(100)
+        ]);
+    }
+}
+
 function main(array $argv): int {
     $rest = 0;
     $opts = getopt('h', ['help', 'version'], $rest);
@@ -93,6 +198,8 @@ function main(array $argv): int {
         createTables($pdo);
 
         $pdo->beginTransaction();
+        createCategories($pdo);
+        generatePosts($pdo, 100);
         $pdo->commit();
         var_dump($pdo);
         
