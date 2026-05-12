@@ -8,17 +8,17 @@ use App\Repositories\PostsRepository;
 
 class HomeController
 {
-    public function __construct(private PostsRepository $repo) {}
+    public function __construct(private readonly PostsRepository $postsRepository) {}
 
     public function index(): void
     {
-        $categories = $this->repo->getAllCategories();
+        $categories = $this->postsRepository->getAllCategories();
         $categoryPost = [];
-        foreach($categories as $category) {
-            $categoryPost[$category['id']] = [
+        foreach ($categories as $category) {
+            $categoryPost[$category->id] = [
 
-                'category_name' => $category['name'],
-                'posts' => $this->repo->getRelatedPosts($category['id'], 0)
+                'category_name' => $category->name,
+                'posts' => $this->postsRepository->getRelatedPosts($category->id, 0),
 
             ];
         }

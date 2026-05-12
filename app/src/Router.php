@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controllers\HomeController;
+use App\Controllers\PostsController;
+use App\Repositories\PostsRepository;
+use PDO;
 use RuntimeException;
 
 /**
- * TODO: $routes должен быть итерратором
- * TODO: CyclomaticComplexity 10 из 10. Уменьшить
- * TODO: ExitExpression (строка 51). Заменить на возврат/исключение.
- *
  * @param array<string, mixed> $routes
  */
-function dispatch(array $routes, string $method, string $path, \PDO $pdo): void
+function dispatch(array $routes, string $method, string $path, PDO $pdo): void
 {
     foreach ($routes as [$routeMethod, $routePath, $routeAction]) {
         $routePath = \is_string($routePath ?? null) ? $routePath : '';
@@ -41,15 +41,15 @@ function dispatch(array $routes, string $method, string $path, \PDO $pdo): void
             // Распарсим строку в массив по @
             [$controllerName, $controllerAction] = explode('@', $nameRouteAction);
 
-            
+
             // временное решение
             $repositories = [
-                'App\Controllers\HomeController' => 'App\Repositories\PostsRepository',
-                'App\Controllers\PostsController' => 'App\Repositories\PostsRepository'
+                HomeController::class => PostsRepository::class,
+                PostsController::class => PostsRepository::class,
             ];
             $repo = null;
             if (isset($repositories[$controllerName])) {
-               $repo = new $repositories[$controllerName]($pdo);
+                $repo = new $repositories[$controllerName]($pdo);
             }
 
             $controller = new $controllerName($repo);

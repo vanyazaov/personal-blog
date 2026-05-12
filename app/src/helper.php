@@ -24,13 +24,21 @@ function e(string $s): string
     return htmlspecialchars($s, ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8');
 }
 
-function fmt_date(?string $datetime, string $format = 'd.m.Y H:i'): string {
-    if (!$datetime) return '—';
+function fmt_date(?string $datetime, string $format = 'd.m.Y H:i'): string
+{
+    if ($datetime === null || $datetime === '' || $datetime === '0') {
+        return '—';
+    }
+
     $ts = strtotime($datetime);
     return $ts === false ? '—' : date($format, $ts);
 }
 
-function truncate(string $s, int $max = 200): string {
-    if (mb_strlen($s) <= $max) return $s;
+function truncate(string $s, int $max = 200): string
+{
+    if (mb_strlen($s) <= $max) {
+        return $s;
+    }
+
     return mb_substr($s, 0, $max) . '…';
 }

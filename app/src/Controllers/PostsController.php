@@ -8,16 +8,17 @@ use App\Repositories\PostsRepository;
 
 class PostsController
 {
-    public function __construct(private PostsRepository $repo) {}
+    public function __construct(private readonly PostsRepository $postsRepository) {}
 
     public function index(string $id): void
     {
         $categoryId = (int) $id;
-        $posts = $this->repo->findByCategory($categoryId, 9);
-        if (empty($posts)) {
+        $posts = $this->postsRepository->findByCategory($categoryId, 9);
+        if ($posts === []) {
             render('errors/404');
             return;
         }
+
         render('posts/list', ['categoryId' => $categoryId, 'posts' => $posts]);
     }
 
@@ -25,12 +26,12 @@ class PostsController
     {
         $categoryId = (int) $categoryId;
         $postId = (int) $id;
-        $post = $this->repo->findById($postId);
-        $relatedPosts = $this->repo->getRelatedPosts($categoryId, $postId);
+        $post = $this->postsRepository->findById($postId);
+        $relatedPosts = $this->postsRepository->getRelatedPosts($categoryId, $postId);
         render('posts/show', [
             'categoryId' => $categoryId,
             'post' => $post,
-            'relatedPosts' => $relatedPosts
+            'relatedPosts' => $relatedPosts,
         ]);
     }
 }

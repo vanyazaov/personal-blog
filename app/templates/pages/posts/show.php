@@ -4,7 +4,7 @@
             <!-- HERO IMAGE -->
             <div class="single-post__image">
                 <img
-                    src="/images/<?= e($post['picture']) ?>"
+                    src="/images/<?= e($post->picture) ?>"
                     alt="Post cover image"
                 >
             </div>
@@ -27,7 +27,7 @@
 
                 <!-- TITLE -->
                 <h1 class="single-post__title">
-                    <?= e($post['title']) ?>
+                    <?= e($post->title) ?>
                 </h1>
 
                 <!-- DESCRIPTION -->
@@ -40,7 +40,7 @@
                 <div class="single-post__meta">
 
                     <span class="post-meta-item">
-                        <?= fmt_date($post['created_at']) ?>
+                        <?= fmt_date($post->created_at) ?>
                     </span>
 
                     <span class="post-meta-separator">
@@ -58,7 +58,7 @@
             <!-- CONTENT -->
             <div class="single-post__content">
 
-                <?= e($post['body']) ?>
+                <?= e($post->body) ?>
 
             </div>
 
@@ -81,9 +81,9 @@
                 <!-- CARD -->
                 <article class="post-card">
 
-                    <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>" class="post-image-link">
+                    <a href="/category/<?= e($categoryId) ?>/<?= e($relPost->id) ?>" class="post-image-link">
                         <img
-                            src="/images/<?= e($relPost['picture']) ?>"
+                            src="/images/<?= e($relPost->picture) ?>"
                             alt=""
                             class="post-image"
                         >
@@ -92,20 +92,20 @@
                     <div class="post-content">
 
                         <h3 class="post-title">
-                            <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>">
-                                <?= e($relPost['title']) ?>
+                            <a href="/category/<?= e($categoryId) ?>/<?= e($relPost->id) ?>">
+                                <?= e($relPost->title) ?>
                             </a>
                         </h3>
 
                         <time class="post-date">
-                            <?= fmt_date($relPost['created_at']) ?>
+                            <?= fmt_date($relPost->created_at) ?>
                         </time>
 
                         <p class="post-excerpt">
-                            <?= truncate(e($relPost['body'])) ?>
+                            <?= truncate(e($relPost->body)) ?>
                         </p>
 
-                        <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>" class="read-more">
+                        <a href="/category/<?= e($categoryId) ?>/<?= e($relPost->id) ?>" class="read-more">
                             Continue Reading
                         </a>
 
