@@ -13,17 +13,24 @@ class PostsController
     public function index(string $id): void
     {
         $categoryId = (int) $id;
-        $posts = $this->repo->findByCategory($categoryId, 10);
+        $posts = $this->repo->findByCategory($categoryId, 9);
+        if (empty($posts)) {
+            render('errors/404');
+            return;
+        }
         render('posts/list', ['categoryId' => $categoryId, 'posts' => $posts]);
     }
 
     public function show(string $categoryId, string $id): void
     {
         $categoryId = (int) $categoryId;
-        $articleId = (int) $id;
+        $postId = (int) $id;
+        $post = $this->repo->findById($postId);
+        $relatedPosts = $this->repo->getRelatedPosts($categoryId, $postId);
         render('posts/show', [
             'categoryId' => $categoryId,
-            'articleId' => $articleId,
+            'post' => $post,
+            'relatedPosts' => $relatedPosts
         ]);
     }
 }

@@ -16,6 +16,7 @@ const SQL_CREATE_TABLES = [
     `id` int NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `title` varchar(200) NOT NULL,
     `body` text NOT NULL,
+    `picture` varchar(20) DEFAULT NULL,
     `created_at` datetime NULL
     )",
 
@@ -166,12 +167,13 @@ function generatePosts(\PDO $pdo, int $postsCount): void {
     
     // Генерация массива постов
     $stmt = $pdo->prepare('
-        INSERT INTO posts (title, body, created_at) VALUES (?, ?, ?)
+        INSERT INTO posts (title, body, picture , created_at) VALUES (?, ?, ?, ?)
     ');
     for ($i = 1; $i <= $postsCount; $i++) {
         $stmt->execute([
             generateTitle($titles, $adjectives, $nouns),
             generateBody($paragraphs),
+            'post-' . mt_rand(1, 3) . '.png',
             randomDate(100)
         ]);
     }

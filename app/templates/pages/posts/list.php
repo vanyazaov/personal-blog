@@ -3,10 +3,6 @@
 
                 <div class="section-header">
                     <h2 class="section-title">Category <?= $data['categoryId'] ?></h2>
-
-                    <a href="#" class="view-all">
-                        View All
-                    </a>
                 </div>
 
                 <div class="posts-grid">
@@ -15,9 +11,9 @@
                      <?php foreach($posts as $post): ?>
                     <article class="post-card">
 
-                        <a href="#" class="post-image-link">
+                        <a href="/category/<?= e($categoryId) ?>/<?= e($post['id']) ?>" class="post-image-link">
                             <img
-                                src="/images/post-1.png"
+                                src="/images/<?= e($post['picture']) ?>"
                                 alt="Post image"
                                 class="post-image"
                             >
@@ -26,20 +22,20 @@
                         <div class="post-content">
 
                             <h3 class="post-title">
-                                <a href="#">
-                                    <?=  htmlspecialchars($post['title'], ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8') ?>
+                                <a href="/category/<?= e($categoryId) ?>/<?= e($post['id']) ?>">
+                                    <?=  e($post['title']) ?>
                                 </a>
                             </h3>
 
-                            <time class="post-date" datetime="2019-07-19">
-                                May 6, 2026
+                            <time class="post-date" datetime="<?= fmt_date($post['created_at']) ?>">
+                                <?= fmt_date($post['created_at']) ?>
                             </time>
 
                             <p class="post-excerpt">
-                                <?=  htmlspecialchars($post['body'], ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE, 'UTF-8') ?>
+                                <?=  truncate(e($post['body'])) ?>
                             </p>
 
-                            <a href="#" class="read-more">
+                            <a href="/category/<?= e($categoryId) ?>/<?= e($post['id']) ?>" class="read-more">
                                 Continue Reading
                             </a>
 

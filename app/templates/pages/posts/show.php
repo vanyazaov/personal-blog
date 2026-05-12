@@ -4,7 +4,7 @@
             <!-- HERO IMAGE -->
             <div class="single-post__image">
                 <img
-                    src="/images/post-2.png"
+                    src="/images/<?= e($post['picture']) ?>"
                     alt="Post cover image"
                 >
             </div>
@@ -27,7 +27,7 @@
 
                 <!-- TITLE -->
                 <h1 class="single-post__title">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit
+                    <?= e($post['title']) ?>
                 </h1>
 
                 <!-- DESCRIPTION -->
@@ -40,7 +40,7 @@
                 <div class="single-post__meta">
 
                     <span class="post-meta-item">
-                        May 7, 2026
+                        <?= fmt_date($post['created_at']) ?>
                     </span>
 
                     <span class="post-meta-separator">
@@ -58,40 +58,7 @@
             <!-- CONTENT -->
             <div class="single-post__content">
 
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Doloremque vero placeat cupiditate illum aliquid porro.
-                </p>
-
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Corrupti reprehenderit, distinctio voluptates aliquam
-                    molestiae rerum.
-                </p>
-
-                <h2>
-                    Subheading example
-                </h2>
-
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Quae voluptate doloribus dignissimos nihil perspiciatis
-                    tenetur.
-                </p>
-
-                <blockquote>
-                    Important quote from article content.
-                </blockquote>
-
-                <img
-                    src="/images/content-image.jpg"
-                    alt="Content image"
-                >
-
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Temporibus saepe obcaecati necessitatibus.
-                </p>
+                <?= e($post['body']) ?>
 
             </div>
 
@@ -110,12 +77,13 @@
 
             <div class="posts-grid">
 
+                <?php foreach($relatedPosts as $relPost): ?>
                 <!-- CARD -->
                 <article class="post-card">
 
-                    <a href="#" class="post-image-link">
+                    <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>" class="post-image-link">
                         <img
-                            src="/images/post-1.png"
+                            src="/images/<?= e($relPost['picture']) ?>"
                             alt=""
                             class="post-image"
                         >
@@ -124,96 +92,27 @@
                     <div class="post-content">
 
                         <h3 class="post-title">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet
+                            <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>">
+                                <?= e($relPost['title']) ?>
                             </a>
                         </h3>
 
                         <time class="post-date">
-                            May 6, 2026
+                            <?= fmt_date($relPost['created_at']) ?>
                         </time>
 
                         <p class="post-excerpt">
-                            Small excerpt for related article preview.
+                            <?= truncate(e($relPost['body'])) ?>
                         </p>
 
-                        <a href="#" class="read-more">
+                        <a href="/category/<?= e($categoryId) ?>/<?= e($relPost['id']) ?>" class="read-more">
                             Continue Reading
                         </a>
 
                     </div>
 
                 </article>
-
-                <!-- CARD -->
-                <article class="post-card">
-
-                    <a href="#" class="post-image-link">
-                        <img
-                            src="/images/post-2.png"
-                            alt=""
-                            class="post-image"
-                        >
-                    </a>
-
-                    <div class="post-content">
-
-                        <h3 class="post-title">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet
-                            </a>
-                        </h3>
-
-                        <time class="post-date">
-                            May 7, 2026
-                        </time>
-
-                        <p class="post-excerpt">
-                            Small excerpt for related article preview.
-                        </p>
-
-                        <a href="#" class="read-more">
-                            Continue Reading
-                        </a>
-
-                    </div>
-
-                </article>
-
-                <!-- CARD -->
-                <article class="post-card">
-
-                    <a href="#" class="post-image-link">
-                        <img
-                            src="/images/post-3.png"
-                            alt=""
-                            class="post-image"
-                        >
-                    </a>
-
-                    <div class="post-content">
-
-                        <h3 class="post-title">
-                            <a href="#">
-                                Lorem ipsum dolor sit amet
-                            </a>
-                        </h3>
-
-                        <time class="post-date">
-                            May 8, 2026
-                        </time>
-
-                        <p class="post-excerpt">
-                            Small excerpt for related article preview.
-                        </p>
-
-                        <a href="#" class="read-more">
-                            Continue Reading
-                        </a>
-
-                    </div>
-
-                </article>
+                <?php endforeach; ?>
 
             </div>
 

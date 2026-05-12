@@ -44,6 +44,7 @@ function dispatch(array $routes, string $method, string $path, \PDO $pdo): void
             
             // временное решение
             $repositories = [
+                'App\Controllers\HomeController' => 'App\Repositories\PostsRepository',
                 'App\Controllers\PostsController' => 'App\Repositories\PostsRepository'
             ];
             $repo = null;
